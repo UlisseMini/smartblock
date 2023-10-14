@@ -5,9 +5,13 @@
 </head>
 <body>
     <h2>Block websites based on title patterns:</h2>
-    <textarea id="patterns" rows="10" cols="30"></textarea>
-    <br>
-    <button id="save">Save</button>
+    <form id="settingsForm">
+        <textarea name="instructions" placeholder="Block instructions" rows="10" cols="30"></textarea>
+        <br>
+        <input name="apiKey" type="text" placeholder="OpenAI API Key">
+        <br>
+        <input type="submit" value="Save">
+    </form>
     <script src="options.js"></script>
 </body>
 </html>

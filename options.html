@@ -2,16 +2,19 @@
 <html>
 <head>
     <title>Extension Settings</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="options.css">
 </head>
 <body>
-    <h2>Block websites based on title patterns:</h2>
-    <form id="settingsForm">
-        <textarea name="instructions" placeholder="Block instructions" rows="10" cols="30"></textarea>
-        <br>
-        <input name="apiKey" type="text" placeholder="OpenAI API Key">
-        <br>
-        <input type="submit" value="Save">
-    </form>
+    <div>
+        <h2>Settings</h2>
+        <form id="settingsForm">
+            <textarea name="instructions" placeholder="Block instructions" rows="10" cols="30"></textarea>
+            <input name="apiKey" type="text" placeholder="OpenAI API Key">
+            <input type="submit" value="Save">
+        </form>
+    </div>
     <script src="options.js"></script>
 </body>
 </html>

@@ -69,30 +69,31 @@ async function shouldBlock() {
 }
 
 async function blockWebsite(reason) {
-    // Create a full-page overlay
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.zIndex = '99999999'; // a high value to ensure it's on top
-    overlay.style.backgroundColor = 'rgba(255,255,255,0.95)';
-    overlay.style.display = 'flex';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
-    overlay.style.flexDirection = 'column';
-    overlay.style.fontSize = '24px';
-    overlay.style.color = '#333';
+  // Create a full-page overlay
+  const overlay = document.createElement('div');
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100%';
+  overlay.style.height = '100%';
+  overlay.style.zIndex = '99999999'; // a high value to ensure it's on top
+  overlay.style.backgroundColor = 'rgba(255,255,255,0.95)';
+  overlay.style.display = 'flex';
+  overlay.style.justifyContent = 'center';
+  overlay.style.alignItems = 'center';
+  overlay.style.flexDirection = 'column';
+  overlay.style.fontSize = '24px';
+  overlay.textAlign = 'center';
+  overlay.style.color = '#333';
 
-    // Add block message and reason
-    overlay.innerHTML = `
+  // Add block message and reason
+  overlay.innerHTML = `
         <h1>This website is blocked</h1>
-        <p>${reason}</p>
+        <p style="max-width: 70ch; padding: 16px;">${reason}</p>
     `;
 
-    // Append the overlay to the body
-    document.body.replaceChildren(overlay);
+  // Append the overlay to the body
+  document.body.replaceChildren(overlay);
 }
 
 
@@ -116,12 +117,18 @@ async function getStorage() {
   });
 }
 
+function init() {
+  // mutation observer for title changes, on title change, run main
+  const observer = new MutationObserver(main);
+  observer.observe(document.querySelector('title'), { childList: true });
+}
+
 const loaded = (document.readyState === 'complete' || document.readyState === 'interactive')
 
 if (loaded) {
   console.log('Load already completed')
-  main()
+  init()
 } else {
   console.log('Waiting for load...')
-  document.addEventListener('DOMContentLoaded', main)
+  document.addEventListener('DOMContentLoaded', init)
 }

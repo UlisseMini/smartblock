@@ -23,7 +23,7 @@ async function shouldBlock() {
       'messages': [
         {'role': 'system', 'content': 'You are BlockGPT. an AI that blocks websites based on nuanced instructions and reasoning.'},
         {'role': 'user', 'content': `Block instructions: ${instructions}`},
-        {'role': 'user', 'content': `Should the website with title "${document.title}" be blocked at ${time}? Call the function with the answer.`},
+        {'role': 'user', 'content': `Should the website with title "${document.title}" and url starting with "${window.location.href.slice(0, 40)}" be blocked at ${time}? Call the function with the answer.`},
       ],
       'temperature': 0,
       'functions': [{
@@ -119,8 +119,16 @@ async function getStorage() {
 
 function init() {
   // mutation observer for title changes, on title change, run main
-  const observer = new MutationObserver(main);
-  observer.observe(document.querySelector('title'), { childList: true });
+  const titleElement = document.querySelector('title');
+  if (titleElement) {
+    const observer = new MutationObserver(() => {
+      console.log('Title changed: ', document.title)
+      main()
+    });
+    observer.observe(titleElement, { childList: true });
+  } else {
+    setTimeout(init, 50);
+  }
 }
 
 const loaded = (document.readyState === 'complete' || document.readyState === 'interactive')

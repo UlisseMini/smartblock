@@ -34,7 +34,7 @@ async function shouldBlock(settings, context) {
           'properties': {
             'reasoning': {
               'type': 'string',
-              'description': 'Step-by-step reasoning for decision',
+              'description': 'Step-by-step reasoning for if the site should be blocked',
             },
             'block': {
               'type': 'boolean',
@@ -55,16 +55,18 @@ async function shouldBlock(settings, context) {
   const json = await resp.json();
   message = json['choices'][0]['message']
   let args = null;
+  let rawArgs = null;
   if (message["function_call"] && message["function_call"]["name"] == 'block') {
+    rawArgs = message["function_call"]["arguments"]
     try {
-      args = JSON.parse(message["function_call"]["arguments"])
+      args = JSON.parse(rawArgs)
       console.log(`raw args: ${message['function_call']['arguments']}`)
     } catch (e) {
       console.log(`Error parsing arguments: ${e}`)
     }
   }
 
-  console.log(`--------- CONCLUSION: ${JSON.stringify(args)}`)
+  console.log(`--------- CONCLUSION, RAW ARGS: ${rawArgs}`)
   return args;
 }
 

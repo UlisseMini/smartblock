@@ -1,5 +1,4 @@
 document.getElementById('settingsForm').addEventListener('submit', function(event) {
-  console.log("Submit")
   event.preventDefault();
   let formData = new FormData(this);
   let settings = {};
@@ -7,6 +6,10 @@ document.getElementById('settingsForm').addEventListener('submit', function(even
   console.log('saving settings', settings)
   chrome.storage.sync.set({'settings': settings}, function() {
     console.log("Settings saved")
+    // set submit button text to "saved" temporarily
+    const submitInput = document.getElementById('submit');
+    submitInput.value = "Saved";
+    setTimeout(function() { submitInput.value = "Save"; }, 500);
   });
 });
 

@@ -27,8 +27,8 @@ async function shouldBlock(settings, context) {
       ],
       'temperature': 0,
       'functions': [{
-        'name': 'block',
-        'description': 'Pass true to block the site, or false not to',
+        'name': 'block_decision',
+        'description': 'Decide whether to block the website',
         'parameters': {
           'type': 'object',
           'properties': {
@@ -36,12 +36,12 @@ async function shouldBlock(settings, context) {
               'type': 'string',
               'description': 'Step-by-step reasoning for if the site should be blocked',
             },
-            'block': {
+            'block_choice': {
               'type': 'boolean',
-              'description': 'Whether to block the website',
+              'description': 'true if the site should be blocked, false otherwise',
             }
           },
-          'required': ['reasoning', 'block'],
+          'required': ['reasoning', 'block_choice'],
         },
       }],
     })
@@ -53,16 +53,17 @@ async function shouldBlock(settings, context) {
   }
 
   const json = await resp.json();
-  message = json['choices'][0]['message']
+  message = json['choices'][0]['message'];
   let args = null;
   let rawArgs = null;
-  if (message["function_call"] && message["function_call"]["name"] == 'block') {
-    rawArgs = message["function_call"]["arguments"]
+  if (message["function_call"] && message["function_call"]["name"] == 'block_decision') {
+    rawArgs = message["function_call"]["arguments"];
     try {
       args = JSON.parse(rawArgs)
-      console.log(`raw args: ${message['function_call']['arguments']}`)
+      console.log(`raw args: ${message['function_call']['arguments']}`);
+      args.block = args.block_choice;
     } catch (e) {
-      console.log(`Error parsing arguments: ${e}`)
+      console.log(`Error parsing arguments: ${e}`);
     }
   }
 

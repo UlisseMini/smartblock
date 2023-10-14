@@ -4,8 +4,15 @@ async function shouldBlock() {
   console.log(`------------ Checking ${document.title}`)
   let settings = (await getStorage()).settings;
   console.log('settings', settings)
+  if (!settings.urlPatterns) return;
   if (!settings.instructions) return;
   if (!settings.apiKey) return;
+
+  const patterns = settings.urlPatterns.trim().split('\n')
+  if (!patterns.some(p => document.location.href.match(p.replace('*', '.*')))) {
+    console.log(`No patterns matched ${document.location.href}`)
+    return;
+  }
 
   let instructions = settings.instructions
 
@@ -69,31 +76,8 @@ async function shouldBlock() {
 }
 
 async function blockWebsite(reason) {
-  // Create a full-page overlay
-  const overlay = document.createElement('div');
-  overlay.style.position = 'fixed';
-  overlay.style.top = '0';
-  overlay.style.left = '0';
-  overlay.style.width = '100%';
-  overlay.style.height = '100%';
-  overlay.style.zIndex = '99999999'; // a high value to ensure it's on top
-  overlay.style.backgroundColor = 'rgba(255,255,255,0.95)';
-  overlay.style.display = 'flex';
-  overlay.style.justifyContent = 'center';
-  overlay.style.alignItems = 'center';
-  overlay.style.flexDirection = 'column';
-  overlay.style.fontSize = '24px';
-  overlay.textAlign = 'center';
-  overlay.style.color = '#333';
-
-  // Add block message and reason
-  overlay.innerHTML = `
-        <h1>This website is blocked</h1>
-        <p style="max-width: 70ch; padding: 16px;">${reason}</p>
-    `;
-
-  // Append the overlay to the body
-  document.body.replaceChildren(overlay);
+  // redirect to block.html with reason
+  chrome.runtime.sendMessage({redirect: 'blocked.html' + `?reason=${encodeURIComponent(reason)}`});
 }
 
 

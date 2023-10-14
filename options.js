@@ -22,6 +22,48 @@ chrome.storage.sync.get(function(data) {
       const element = form.elements.namedItem(key);
       if (element) { element.value = value; }
     }
+
+    // If there are keys in the html form that are not in the settings, then
+    // submit a synthetic event to set the default values.
+    const newKeys = Array.from(form.querySelectorAll('textarea, input')).filter((el) => {
+      return !Object.keys(data.settings).includes(el.name) && el.type != 'submit';
+    });
+    console.log("Keys", newKeys);
+    if (newKeys.length > 0) {
+      document.getElementById('submit').click();
+    }
   }
 });
 
+
+document.getElementById('testButton').addEventListener('click', () => {
+  // Read user history and display at the bottom
+  chrome.history.search({text: '', maxResults: 20}, async (history) => {
+    let resultElements = []
+    const settings = (await getStorage()).settings
+
+    for (const item of history) {
+      const li = document.createElement('li');
+      li.innerText = item.title + ' - ' + item.url;
+      li.style.color = 'black'; // loading
+      li.style.whiteSpace = 'pre-wrap';
+      li.style.fontSize = '14px';
+      resultElements.push(li);
+
+      // Insert the li
+      document.getElementById('testResults').replaceChildren(...resultElements);
+
+      // check the site
+      const args = await shouldBlock(settings, {
+        title: item.title, url: item.url, time: currentTime()
+      });
+      if (!args) {
+        li.innerText = 'Skipped: ' + item.title + ' - ' + item.url;
+        li.style.color = 'gray';
+        continue;
+      }
+      li.innerText = item.title + ' - ' + item.url + `\nReason: ${args.reasoning}`;
+      li.style.color = args.block ? 'red' : 'green'
+    }
+  });
+})

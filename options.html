@@ -10,12 +10,22 @@
     <div>
         <h2>Settings</h2>
         <form id="settingsForm">
-            <textarea name="instructions" placeholder="Block instructions" rows="10" cols="30"></textarea>
-            <textarea name="urlPatterns" placeholder="URL patterns" rows="10" cols="30"></textarea>
+            <textarea name="system" placeholder="System Prompt" rows="5" cols="30">You are BlockGPT. You block websites based on nuanced preferences.</textarea>
+            <textarea name="instructions" placeholder="Block instructions" rows="10" cols="30">Block YouTube, except for math lectures.</textarea>
+            <textarea name="template" placeholder="Template" rows="5" cols="10">Should the website with title "${title}" and url starting with "${url}" be blocked at ${time}?</textarea>
+            <textarea name="urlPatterns" placeholder="URL patterns" rows="10" cols="30">*</textarea>
             <input name="apiKey" type="text" placeholder="OpenAI API Key">
             <input type="submit" id="submit" value="Save">
         </form>
     </div>
+
+    <div>
+        <h2>Testing (on history)</h2>
+        <button id="testButton">Test</button>
+        <div style="margin-top: 32px;" id="testResults"></div>
+    </div>
+
+    <script src="lib.js"></script>
     <script src="options.js"></script>
 </body>
 </html>

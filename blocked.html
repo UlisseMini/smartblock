@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blocked Page</title>
-    <link rel="stylesheet" href="blocked.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>Page Blocked!</h1>
-    <p id="reason">Loading...</p>
+    <p id="reason">Reason Loading...</p>
+
+    <p>Is this block wrong? Help us improve!</p>
+    <form id="form">
+        <textarea type="text" name="feedback" placeholder="Feedback on this block"></textarea>
+        <input id="submit" type="submit" value="Send feedback">
+    </form>
 
     <script src="blocked.js"></script>
 </body>

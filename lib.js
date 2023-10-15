@@ -11,8 +11,14 @@ async function shouldBlock(settings, context) {
     console.log(`No patterns matched ${context.url}`)
     return;
   }
-  
-  const body = {
+
+  const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${settings.apiKey}`,
+    },
+    body: JSON.stringify({
       'model': 'gpt-3.5-turbo',
       'messages': [
         {'role': 'system', 'content': settings.system},
@@ -26,24 +32,19 @@ async function shouldBlock(settings, context) {
         'parameters': {
           'type': 'object',
           'properties': {
+            'reasoning': {
+              'type': 'string',
+              'description': 'Step-by-step reasoning for if the site should be blocked',
+            },
             'block_choice': {
               'type': 'boolean',
               'description': 'true if the site should be blocked, false otherwise',
             }
           },
-          'required': ['block_choice'],
+          'required': ['reasoning', 'block_choice'],
         },
       }],
-  };
-  console.log("Calling API with body:", JSON.stringify(body, null, 2));
-
-  const resp = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${settings.apiKey}`,
-    },
-    body: JSON.stringify(body),
+    })
   });
   console.log(resp);
   if (!resp.ok) {
@@ -53,12 +54,8 @@ async function shouldBlock(settings, context) {
 
   const json = await resp.json();
   message = json['choices'][0]['message'];
-    console.log('message response', message)
   let args = null;
   let rawArgs = null;
-  if (message.content) {
-    args = {reasoning: message.content};
-  }
   if (message["function_call"] && message["function_call"]["name"] == 'block_decision') {
     rawArgs = message["function_call"]["arguments"];
     try {

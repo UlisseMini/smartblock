@@ -2,7 +2,6 @@
 
 async function blockWebsite(reason) {
   // redirect to block.html with reason
-  console.log("Sending block message to background.js...")
   chrome.runtime.sendMessage({redirect: 'blocked.html' + `?reason=${encodeURIComponent(reason)}`});
 }
 

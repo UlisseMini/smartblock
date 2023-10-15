@@ -17,17 +17,44 @@ async function main() {
   }
 }
 
+// Has the document title fully loaded? (that's what we filter by)
+function fullyLoaded() {
+  const url = window.location.href;
+  const title = document.title;
+
+  // Tweets should contain " on Twitter: "
+  if (url.match(/twitter\.com\/[^\/]+\/status\/\d+/) && !title.match(/ on (Twitter|X): /)) {
+    return false;
+  }
+
+  // YouTube videos should end with " - YouTube"
+  if (url.match(/youtube\.com\/watch\?v=/) && !title.match(/ - YouTube$/)) return false;
+
+  // Disable for toggl because the title changes every second
+  if (url.match(/track\.toggl\.com\/timer/)) return false;
+
+  // Otherwise hope for the best!
+  return true
+}
+
 function init() {
   // mutation observer for title changes, on title change, run main
   const titleElement = document.querySelector('title');
   if (titleElement) {
     const observer = new MutationObserver(() => {
+      if (!fullyLoaded()) return;
+
       console.log('Title changed: ', document.title)
+      if (!chrome.runtime?.id) {
+        // The extension was reloaded and this script is orphaned
+        observer.disconnect();
+        return;
+      }
       main()
     });
     observer.observe(titleElement, { childList: true });
   } else {
-    setTimeout(init, 50);
+    setTimeout(init, 50); // wait for <title> to load
   }
 }
 
